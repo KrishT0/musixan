@@ -1,8 +1,8 @@
+import MusicPlayer from "@/components/music-player";
 import { dmMono, nunito } from "@/lib/fonts";
 import type { Metadata } from "next";
 import Navbar from "../components/navbar";
 import "./globals.css";
-// import MusicPlayer from "@/components/music-player";
 
 export const metadata: Metadata = {
   title: "Musixan",
@@ -25,7 +25,7 @@ export default function RootLayout({
       >
         <Navbar />
         {children}
-        {/* <MusicPlayer /> */}
+        <MusicPlayer />
       </body>
     </html>
   );

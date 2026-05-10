@@ -1,36 +1,138 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Melo 🎵
+
+A Spotify-inspired music player built with Next.js and Supabase. Upload your own songs and stream them from anywhere with a clean, minimal UI.
+
+![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)
+![Supabase](https://img.shields.io/badge/Supabase-Storage-3ECF8E?style=flat-square&logo=supabase)
+![Zustand](https://img.shields.io/badge/Zustand-State-orange?style=flat-square)
+![Tailwind](https://img.shields.io/badge/Tailwind-CSS-38BDF8?style=flat-square&logo=tailwindcss)
+![Vercel](https://img.shields.io/badge/Deployed-Vercel-black?style=flat-square&logo=vercel)
+
+---
+
+## Features
+
+- 🎧 Stream audio files stored in Supabase Storage
+- 🔍 Live search to filter songs by name
+- ⏯ Play, pause, skip next/prev
+- ⏩ Seekable progress bar with live timestamps
+- 🔊 Volume control with mute toggle
+- 📱 Responsive layout — works on mobile and desktop
+- 🎨 Spotify-style dark UI with active song highlighting
+
+---
+
+## Tech Stack
+
+| Layer      | Technology              |
+| ---------- | ----------------------- |
+| Framework  | Next.js 16 (App Router) |
+| Storage    | Supabase Storage        |
+| State      | Zustand                 |
+| Styling    | Tailwind CSS            |
+| Deployment | Vercel                  |
+
+---
+
+## Project Structure
+
+```
+├── app/
+│   ├── layout.tsx          # Root layout — MusicPlayer lives here
+│   └── page.tsx            # Home page — fetches and lists songs
+├── components/
+│   ├── SongList.tsx        # Song list with search filter and active state
+│   ├── MusicPlayer.tsx     # Floating bottom player
+│   └── SearchBar.tsx       # Search input with keyboard shortcut
+├── lib/
+│   └── supabase/
+│       └── storage.ts      # getSongs(), getSongUrl()
+└── store/
+    └── use-player-store.ts # Zustand store — queue, playback, search
+```
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### 1. Clone the repo
+
+```bash
+git clone https://github.com/KrishT0/musixan.git
+cd musixan
+npm install
+```
+
+### 2. Set up Supabase
+
+- Create a new project at [supabase.com](https://supabase.com)
+- Go to **Storage** and create a bucket named `songs`
+- Set the bucket to **private** (signed URLs are used for playback)
+
+### 3. Environment variables
+
+Create a `.env.local` file in the root:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+### 4. Run locally
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Uploading Songs
 
-## Learn More
+Go to **Supabase Dashboard → Storage → songs bucket** and upload your audio files directly. Supported formats:
 
-To learn more about Next.js, take a look at the following resources:
+- `.mp3`
+- `.opus` / `.ogg` — Chrome and Firefox only
+- `.m4a` / `.wav` / `.flac`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+> For best cross-browser compatibility, use `.mp3` or `.m4a`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## How It Works
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Playback flow:**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+User clicks song
+  → getSongUrl() generates a signed Supabase URL (1hr expiry)
+  → playSong() updates Zustand store
+    → MusicPlayer useEffect fires
+      → audio.src = signedUrl
+      → audio.load() → audio.play()
+```
+
+**Search flow:**
+
+```
+User types in SearchBar
+  → setSearchQuery() updates Zustand store
+    → SongList reads searchQuery
+      → useMemo filters songs array
+        → filtered list re-renders
+```
+
+---
+
+## Deployment
+
+The app is deployed on Vercel. Push to `main` and Vercel picks it up automatically.
+
+Make sure to add your environment variables in the Vercel dashboard under **Project Settings → Environment Variables**.
+
+---
+
+## License
+
+MIT

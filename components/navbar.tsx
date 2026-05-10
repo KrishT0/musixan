@@ -22,10 +22,10 @@ export default function Navbar() {
         </svg>
 
         <div className="mb-5 sm:mb-0">
-          <p className="text-lg sm:text-2xl font-semibold text-center mb-5 sm:mb-0 mt-2 md:mt-8">
+          <p className="text-lg sm:text-2xl font-semibold text-center mt-8">
             Hear What You Want, When You Want
           </p>
-          <p className="hidden md:block text-sm text-neutral-400 font-semibold text-center">
+          <p className="text-sm text-neutral-400 font-semibold text-center">
             Your music, your requests, our mission to keep the vibes going.
           </p>
           <p className="hidden sm:block text-sm text-neutral-400 font-semibold text-center sm:mb-8">

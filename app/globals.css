@@ -4,3 +4,7 @@
   --font-nunito: var(--font-nunito);
   --font-dm-mono: var(--font-dm-mono);
 }
+
+html {
+  scrollbar-gutter: stable;
+}

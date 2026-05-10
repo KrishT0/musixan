@@ -1,5 +1,6 @@
 "use client";
 
+import usePlayerStore from "@/store/use-player-store";
 import { useEffect, useRef, useState } from "react";
 
 const SCROLL_THRESHOLD = 190;
@@ -7,17 +8,8 @@ export default function SearchBar() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [focused, setFocused] = useState(false);
   const [inputValue, setInputValue] = useState("");
-  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
-  const shouldScroll = isMusicPlaying || inputValue.length > 0;
 
-  useEffect(() => {
-    if (shouldScroll) {
-      if (document.body.scrollHeight <= SCROLL_THRESHOLD) return;
-      window.scrollTo({ top: SCROLL_THRESHOLD, behavior: "smooth" });
-    } else {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  }, [shouldScroll, inputValue]);
+  const setSearchQuery = usePlayerStore((state) => state.setSearchQuery);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -72,7 +64,10 @@ export default function SearchBar() {
           type="text"
           value={inputValue}
           placeholder="Search songs..."
-          onChange={(e) => setInputValue(e.target.value)}
+          onChange={(e) => {
+            setInputValue(e.target.value);
+            setSearchQuery(e.target.value);
+          }}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           className="flex-1 bg-transparent font-dm-mono outline-none text-zinc-200 placeholder:text-zinc-500 text-xs caret-white"

@@ -5,13 +5,20 @@ export async function getSongs() {
   const { data, error } = await supabase.storage.from("songs").list();
   if (error) throw error;
 
-  return data.map((song) => ({
-    name: song.name,
-    size: song.metadata?.size as number,
-  }));
+  return data
+    .filter((file) => file.name !== ".emptyFolderPlaceholder")
+    .map((song) => ({
+      name: song.name,
+      size: song.metadata?.size as number,
+    }));
 }
 
-export function getSongUrl(path: string) {
+export async function getSongUrl(name: string) {
   const supabase = createClient();
-  return supabase.storage.from("songs").getPublicUrl(path).data.publicUrl;
+  const { data, error } = await supabase.storage
+    .from("songs")
+    .createSignedUrl(name, 3600); // 3600 = 1 hour expiry
+
+  if (error) throw error;
+  return data.signedUrl;
 }

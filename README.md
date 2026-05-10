@@ -1,4 +1,4 @@
-# Melo 🎵
+# Musixan 🎵
 
 A Spotify-inspired music player built with Next.js and Supabase. Upload your own songs and stream them from anywhere with a clean, minimal UI.
 
@@ -92,11 +92,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 Go to **Supabase Dashboard → Storage → songs bucket** and upload your audio files directly. Supported formats:
 
-- `.mp3`
-- `.opus` / `.ogg` — Chrome and Firefox only
-- `.m4a` / `.wav` / `.flac`
-
-> For best cross-browser compatibility, use `.mp3` or `.m4a`.
+- `.opus` — Chrome and Firefox only
 
 ---
 
@@ -122,17 +118,3 @@ User types in SearchBar
       → useMemo filters songs array
         → filtered list re-renders
 ```
-
----
-
-## Deployment
-
-The app is deployed on Vercel. Push to `main` and Vercel picks it up automatically.
-
-Make sure to add your environment variables in the Vercel dashboard under **Project Settings → Environment Variables**.
-
----
-
-## License
-
-MIT

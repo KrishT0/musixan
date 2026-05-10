@@ -2,6 +2,7 @@ import { dmMono, nunito } from "@/lib/fonts";
 import type { Metadata } from "next";
 import Navbar from "../components/navbar";
 import "./globals.css";
+// import MusicPlayer from "@/components/music-player";
 
 export const metadata: Metadata = {
   title: "Musixan",
@@ -20,10 +21,11 @@ export default function RootLayout({
     >
       <body
         suppressHydrationWarning
-        className="min-h-full max-w-225 mx-auto border-x text-zinc-100 bg-black font-nunito"
+        className="min-h-full max-w-225 mx-auto text-zinc-100 bg-black font-nunito"
       >
         <Navbar />
         {children}
+        {/* <MusicPlayer /> */}
       </body>
     </html>
   );

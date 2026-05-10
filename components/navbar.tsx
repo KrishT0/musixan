@@ -2,11 +2,11 @@ import SearchBar from "./searchbar";
 
 export default function Navbar() {
   return (
-    <nav className="w-full px-6 py-2 shadow-sm">
+    <nav className="w-full px-6 py-2">
       <h1 className="text-lg font-nunito font-bold">Musixan</h1>
-      <div className="justify-center gap-10 flex items-center">
+      <div className="justify-center md:gap-10 flex flex-col md:flex-row items-center">
         <svg
-          className="w-20 h-20 text-white"
+          className="w-16 h-16 sm:w-24 sm:h-24 md:w-18 md:h-18 text-white"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -21,14 +21,14 @@ export default function Navbar() {
           />
         </svg>
 
-        <div className="">
-          <p className="text-2xl font-semibold text-center mt-8">
+        <div className="mb-5 sm:mb-0">
+          <p className="text-lg sm:text-2xl font-semibold text-center mb-5 sm:mb-0 mt-2 md:mt-8">
             Hear What You Want, When You Want
           </p>
-          <p className="text-sm text-neutral-400 font-semibold text-center">
+          <p className="hidden md:block text-sm text-neutral-400 font-semibold text-center">
             Your music, your requests, our mission to keep the vibes going.
           </p>
-          <p className="text-sm text-neutral-400 font-semibold text-center mb-8">
+          <p className="hidden sm:block text-sm text-neutral-400 font-semibold text-center sm:mb-8">
             We don&apos;t have every song. Yet. Request yours and we&apos;ll
             make it happen.
           </p>

@@ -1,9 +1,23 @@
 "use client";
+
 import { useEffect, useRef, useState } from "react";
 
+const SCROLL_THRESHOLD = 190;
 export default function SearchBar() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [focused, setFocused] = useState(false);
+  const [inputValue, setInputValue] = useState("");
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const shouldScroll = isMusicPlaying || inputValue.length > 0;
+
+  useEffect(() => {
+    if (shouldScroll) {
+      if (document.body.scrollHeight <= SCROLL_THRESHOLD) return;
+      window.scrollTo({ top: SCROLL_THRESHOLD, behavior: "smooth" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [shouldScroll, inputValue]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -28,7 +42,7 @@ export default function SearchBar() {
   }, []);
 
   return (
-    <div className="bg-black py-7 rounded-sm">
+    <div className="pt-7 rounded-sm">
       <p className="text-xs font-medium tracking-wider font-dm-mono text-white uppercase mb-5">
         Search songs
       </p>
@@ -56,10 +70,12 @@ export default function SearchBar() {
         <input
           ref={inputRef}
           type="text"
+          value={inputValue}
           placeholder="Search songs..."
+          onChange={(e) => setInputValue(e.target.value)}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          className="flex-1 bg-transparent outline-none text-zinc-200 placeholder:text-zinc-500 text-sm caret-white"
+          className="flex-1 bg-transparent font-dm-mono outline-none text-zinc-200 placeholder:text-zinc-500 text-xs caret-white"
         />
         <kbd className="border border-zinc-800 rounded px-1.5 py-0.5 text-xs text-zinc-400 shrink-0">
           /

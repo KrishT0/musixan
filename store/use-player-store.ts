@@ -33,17 +33,13 @@ const usePlayerStore = create<PlayerStore>((set, get) => ({
 
   setSearchQuery: (query) => set({ searchQuery: query }),
 
-  // Call this once after fetching songs from Supabase
   setQueue: (songs) => set({ queue: songs }),
 
-  // Call this when user clicks a song row
   playSong: (song, url) =>
     set({ currentSong: song, currentUrl: url, isPlaying: true }),
 
-  // Call this on play/pause button click
   togglePlay: () => set((state) => ({ isPlaying: !state.isPlaying })),
 
-  // Call this on next button — also updates currentUrl (bug fix from v1)
   playNext: async (getUrl) => {
     const { queue, currentSong } = get();
     if (!currentSong || queue.length === 0) return;

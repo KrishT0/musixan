@@ -1,5 +1,7 @@
 import MusicPlayer from "@/components/music-player";
 import { dmMono, nunito } from "@/lib/fonts";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import Navbar from "../components/navbar";
 import "./globals.css";
@@ -26,6 +28,8 @@ export default function RootLayout({
         <Navbar />
         {children}
         <MusicPlayer />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

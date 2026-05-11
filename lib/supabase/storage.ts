@@ -13,12 +13,6 @@ export async function getSongs() {
     }));
 }
 
-export async function getSongUrl(name: string) {
-  const supabase = createClient();
-  const { data, error } = await supabase.storage
-    .from("songs")
-    .createSignedUrl(name, 3600); // 3600 = 1 hour expiry
-
-  if (error) throw error;
-  return data.signedUrl;
+export function getSongUrl(name: string): Promise<string> {
+  return Promise.resolve(`/api/stream?name=${encodeURIComponent(name)}`);
 }

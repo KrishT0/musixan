@@ -16,7 +16,6 @@ export async function GET(req: NextRequest) {
   if (!audioRes.ok)
     return new Response("Failed to fetch audio", { status: 502 });
 
-  // Stream it back to the browser through your domain
   return new Response(audioRes.body, {
     headers: {
       "Content-Type": audioRes.headers.get("Content-Type") ?? "audio/ogg",

@@ -1,8 +1,10 @@
 "use client";
 
-import { getSongUrl } from "@/lib/supabase/storage";
+import { getSongUrl, getSongs } from "@/lib/supabase/storage";
 import usePlayerStore from "@/store/use-player-store";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+
+const LIMIT = 30;
 
 type Song = {
   name: string;
@@ -19,26 +21,12 @@ function PlayingBars() {
   return (
     <>
       <style>{`
-        .playing-bars {
-          display: inline-flex;
-          align-items: flex-end;
-          gap: 2px;
-          height: 14px;
-        }
-        .playing-bars span {
-          display: block;
-          width: 3px;
-          background: #1db954;
-          border-radius: 1px;
-          animation: bar-bounce 1s ease-in-out infinite;
-        }
+        .playing-bars { display: inline-flex; align-items: flex-end; gap: 2px; height: 14px; }
+        .playing-bars span { display: block; width: 3px; background: #1db954; border-radius: 1px; animation: bar-bounce 1s ease-in-out infinite; }
         .playing-bars span:nth-child(1) { height: 6px; animation-delay: 0s; }
         .playing-bars span:nth-child(2) { height: 12px; animation-delay: 0.2s; }
         .playing-bars span:nth-child(3) { height: 8px; animation-delay: 0.4s; }
-        @keyframes bar-bounce {
-          0%, 100% { transform: scaleY(0.4); }
-          50%       { transform: scaleY(1); }
-        }
+        @keyframes bar-bounce { 0%, 100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); } }
       `}</style>
       <span className="playing-bars">
         <span />
@@ -49,13 +37,60 @@ function PlayingBars() {
   );
 }
 
-export default function SongList({ songs }: { songs: Song[] }) {
+export default function SongList({ songs: initialSongs }: { songs: Song[] }) {
   const { setQueue, playSong, currentSong, isPlaying, searchQuery } =
     usePlayerStore();
+
+  const [songs, setSongs] = useState<Song[]>(initialSongs);
+  const [offset, setOffset] = useState(LIMIT);
+  const [hasMore, setHasMore] = useState(initialSongs.length === LIMIT);
+  const [loading, setLoading] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setQueue(songs);
   }, [songs, setQueue]);
+
+  const isFetchingRef = useRef(false);
+
+  const fetchMore = async () => {
+    if (isFetchingRef.current || !hasMore) return;
+    isFetchingRef.current = true;
+    setLoading(true);
+    try {
+      const next = await getSongs(offset, LIMIT);
+      setSongs((prev) => {
+        const existingNames = new Set(prev.map((s) => s.name));
+        const unique = next.filter((s) => !existingNames.has(s.name));
+        return [...prev, ...unique];
+      });
+      setOffset((prev) => prev + LIMIT);
+      if (next.length < LIMIT) setHasMore(false);
+    } catch (err) {
+      console.error("Failed to fetch more songs:", err);
+    } finally {
+      isFetchingRef.current = false;
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          console.log("Intersection observer triggered");
+          fetchMore();
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [offset, hasMore, loading]);
 
   const filteredSongs = useMemo(() => {
     if (!searchQuery.trim()) return songs;
@@ -96,13 +131,11 @@ export default function SongList({ songs }: { songs: Song[] }) {
                 >
                   {isActive && isPlaying ? <PlayingBars /> : i + 1}
                 </span>
-
                 <span
                   className={`truncate text-xs sm:text-sm font-semibold ${isActive ? "text-[#1db954]" : "text-white"}`}
                 >
                   {cleanName}
                 </span>
-
                 <span className="text-sm text-neutral-500">
                   {formatBytes(song.size)}
                 </span>
@@ -111,6 +144,13 @@ export default function SongList({ songs }: { songs: Song[] }) {
           );
         })}
       </ul>
+
+      <div ref={sentinelRef} className="py-2 text-center">
+        {loading && <p className="text-xs text-neutral-500">Loading...</p>}
+        {!hasMore && songs.length > 0 && (
+          <p className="text-xs text-neutral-600">All songs loaded</p>
+        )}
+      </div>
     </div>
   );
 }

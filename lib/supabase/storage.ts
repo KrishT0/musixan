@@ -1,8 +1,11 @@
 import { createClient } from "./client";
 
-export async function getSongs() {
+export async function getSongs(offset: number = 0, limit: number = 30) {
   const supabase = createClient();
-  const { data, error } = await supabase.storage.from("songs").list();
+  const { data, error } = await supabase.storage
+    .from("songs")
+    .list("", { limit: limit + 1, offset });
+
   if (error) throw error;
 
   return data
@@ -11,6 +14,17 @@ export async function getSongs() {
       name: song.name,
       size: song.metadata?.size as number,
     }));
+}
+
+export async function getSongsCount() {
+  const supabase = createClient();
+  const { data, error } = await supabase.storage
+    .from("songs")
+    .list("", { limit: 1000 });
+
+  if (error) throw error;
+
+  return data.filter((f) => f.name !== ".emptyFolderPlaceholder").length;
 }
 
 export function getSongUrl(name: string): Promise<string> {

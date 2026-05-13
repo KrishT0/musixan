@@ -16,17 +16,6 @@ export async function getSongs(offset: number = 0, limit: number = 30) {
     }));
 }
 
-export async function getSongsCount() {
-  const supabase = createClient();
-  const { data, error } = await supabase.storage
-    .from("songs")
-    .list("", { limit: 1000 });
-
-  if (error) throw error;
-
-  return data.filter((f) => f.name !== ".emptyFolderPlaceholder").length;
-}
-
 export function getSongUrl(name: string): Promise<string> {
   return Promise.resolve(`/api/stream?name=${encodeURIComponent(name)}`);
 }
